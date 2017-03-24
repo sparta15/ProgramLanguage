@@ -1,4 +1,4 @@
-{%
+%{
 //Lenguajes de Programación
 #define NUMERO_RESERVADAS 60
 #define NUMERO_IDENTIFICADORES 100
@@ -23,20 +23,20 @@ int contadorReservadas = 0;
 int contadorId = 0;
 int contadorNumeros = 0;
 
+void sumaId();
+void sumarNumero();
 %}
+
+letra     [a-zA-Z];
+palabra   {letra}+;
+alf       [a-zA-Z0-9];
+dig       [0-9];
+numeros   {dig}+;
+fraccion  [.]{numeros};
+exponente [eE][+-]?{numeros};
+decimal   {numeros}{fraccion}?{exponente}?;
+id        {letra}({alf}|"_")*;
 %%
-"/*(.|\n)*/";
-"//".*"\n"  ;
-[\t]+       ;
-{letra}     [a-zA-Z];
-{palabra}   {letra}+;
-{alf}       [a-zA-Z0-9];
-{dig}       [0-9];
-{numeros}   {dig}+;
-{fraccion}  [.]{numeros};
-{exponente} [eE][+-]?{numeros};
-{decimal}   {numeros}{fraccion}?{exponente}?;
-{id}        {letra}({alf}|"_")*;
 abstract        {TableReservadas[0].value ++;}
 assert          {TableReservadas[1].value ++;}
 boolean         {TableReservadas[2].value ++;}
@@ -87,6 +87,17 @@ try             {TableReservadas[46].value ++;}
 void            {TableReservadas[47].value ++;}
 volatile        {TableReservadas[48].value ++;}
 while           {TableReservadas[49].value ++;}
+{decimal}     {
+		sumarNumero(yytext);
+	}
+
+{id}          { 
+		sumaId(yytext); 
+	}
+"/*"(.|\n)*"*/" ;
+"//".*"\n"  	;
+\n                      /* ignore end of line */;
+[ \t]+                  /* ignore whitespace */;
 "!="        |
 ">="        |
 "<="        |
@@ -118,9 +129,7 @@ while           {TableReservadas[49].value ++;}
 "{"         |
 "}"         |
 "("         |
-")"         ;
-decimal     { sumarNumero(); }
-id          { sumaId(); }
+")"         {}
 
 %%
 
@@ -178,11 +187,12 @@ void inicializarTablaReservadas() {
 }
 
 void sumaId(char yylex[]) {
-    int i = 0;
+    int i;
     int presente = 0;
-    for(i;i<NUMERO_IDENTIFICADORES;i++){
+    for(i=0;i<NUMERO_IDENTIFICADORES;i++){
         if(strcmp(yylex, TableIdentificadores[i].key)==0){
             TableIdentificadores[i].value++;
+	    printf("hola");
             presente=1;
         }
     }
@@ -194,62 +204,65 @@ void sumaId(char yylex[]) {
 }
 
 void sumarNumero(char yylex[]) {
-    int i = 0;
+    int a;
     int presente = 0;
-    for(i;i<NUMEROS;i++){
-        if(strcmp(yylex, TableNumeros[i].key)==0){
-            TableIdentificadores[i].value++;
+    for(a=0;a<NUMEROS;a++){
+        if(strcmp(yylex, TableDigitos[a].key)==0){
+            TableDigitos[a].value++;
+
+	    printf("hola");
+	    printf("%d", TableDigitos[a].value++);
             presente=1;
         }
     }
     if(presente==0){
-        strcpy(TableNumeros[contadorNumeros].key, yylex);
-        TableNumeros[contadorNumeros].value++;
+        strcpy(TableDigitos[contadorNumeros].key, yylex);
+        TableDigitos[contadorNumeros].value++;
         contadorNumeros++;
     }
 }
 
 
 void escribeReservadas(){
-    FILE *ficheroReservadas = ficheroReservadas.open("reserv.txt", "w");
-     if (ficheroReservadas  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
+    FILE *ficheroReservadas = fopen("reserv.txt", "w");
+    // if (ficheroReservadas  == NULL) {
+       // fprintf(stderr,"Error de fichero.\n");
+        //exit(ERROR_LECTURA);
+    //}
     int i;
     for(i=0;i<NUMERO_RESERVADAS;i++){
         if(TableReservadas[i].value != 0){
-            fprintf(fichero, "%s : %d", TableReservadas[i].key, TableReservadas[i].value);
+            fprintf(ficheroReservadas, "%s : %d", TableReservadas[i].key, TableReservadas[i].value);
         }
     }
-    fclose(fichero);
+    fclose(ficheroReservadas);
 }
 
 void escribeIds () {
-    FILE *ficheroIds = ficheroIds.open("identi.txt", "w");
-     if (ficheroIds  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
+    FILE *ficheroIds = fopen("identi.txt", "w");
+     //if (ficheroIds  == NULL) {
+       // fprintf(stderr,"Error de fichero.\n");
+        //exit(ERROR_LECTURA);
+    //}
     int i;
     for(i=0;i<NUMERO_IDENTIFICADORES;i++){
         if(TableIdentificadores[i].value != 0){
-            fprintf(fichero, "%s : %d", TableIdentificadores[i].key, TableIdentificadores[i].value);
+            fprintf(ficheroIds, "%s : %d", TableIdentificadores[i].key, TableIdentificadores[i].value);
         }
     }
     fclose(ficheroIds);
 }
 
 void escribeNumeros () {
-    FILE *ficheroNumeros = ficheroNumeros.open("numero.txt", "w");
-    if (ficheroNumeros  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
+    FILE *ficheroNumeros = fopen("numero.txt", "w");
+    //if (ficheroNumeros  == NULL) {
+      //  fprintf(stderr,"Error de fichero.\n");
+       // exit(ERROR_LECTURA);
+   // }
     int i;
     for(i=0;i<NUMEROS;i++){
         if(TableDigitos[i].value != 0){
-            fprintf(fichero, "%s : %d", TableNumeros[i].key, TableNumeros[i].value);
+            fprintf(ficheroNumeros, "%s : %d", TableDigitos[i].key, TableDigitos[i].value);
         }
     }
     fclose(ficheroNumeros);
