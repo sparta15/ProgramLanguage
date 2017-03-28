@@ -27,15 +27,15 @@ void sumaId();
 void sumarNumero();
 %}
 
-letra     [a-zA-Z];
-palabra   {letra}+;
-alf       [a-zA-Z0-9];
-dig       [0-9];
-numeros   {dig}+;
-fraccion  [.]{numeros};
-exponente [eE][+-]?{numeros};
-decimal   {numeros}{fraccion}?{exponente}?;
-id        {letra}({alf}|"_")*;
+letra     [a-zA-Z]
+palabra   {letra}+
+alf       [a-zA-Z0-9]
+dig       [0-9]
+numeros   {dig}+
+fraccion  [.]{numeros}
+exponente [eE][+-]?{numeros}
+decimal   {numeros}{fraccion}?{exponente}?
+id        {letra}({alf}|"_")*
 %%
 abstract        {TableReservadas[0].value ++;}
 assert          {TableReservadas[1].value ++;}
@@ -232,7 +232,7 @@ void escribeReservadas(){
     int i;
     for(i=0;i<NUMERO_RESERVADAS;i++){
         if(TableReservadas[i].value != 0){
-            fprintf(ficheroReservadas, "%s : %d", TableReservadas[i].key, TableReservadas[i].value);
+            fprintf(ficheroReservadas, "%s : %d\n", TableReservadas[i].key, TableReservadas[i].value);
         }
     }
     fclose(ficheroReservadas);
@@ -247,7 +247,7 @@ void escribeIds () {
     int i;
     for(i=0;i<NUMERO_IDENTIFICADORES;i++){
         if(TableIdentificadores[i].value != 0){
-            fprintf(ficheroIds, "%s : %d", TableIdentificadores[i].key, TableIdentificadores[i].value);
+            fprintf(ficheroIds, "%s : %d\n", TableIdentificadores[i].key, TableIdentificadores[i].value);
         }
     }
     fclose(ficheroIds);
@@ -262,7 +262,7 @@ void escribeNumeros () {
     int i;
     for(i=0;i<NUMEROS;i++){
         if(TableDigitos[i].value != 0){
-            fprintf(ficheroNumeros, "%s : %d", TableDigitos[i].key, TableDigitos[i].value);
+            fprintf(ficheroNumeros, "%s : %d\n", TableDigitos[i].key, TableDigitos[i].value);
         }
     }
     fclose(ficheroNumeros);
