@@ -28,6 +28,7 @@ int contadorNumeros = 0;
 "/*(.|\n)*/";
 "//".*"\n"  ;
 [\t]+       ;
+.|\n        ;
 {letra}     [a-zA-Z];
 {palabra}   {letra}+;
 {alf}       [a-zA-Z0-9];
