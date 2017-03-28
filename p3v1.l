@@ -1,19 +1,20 @@
-{%
+%{
 //Lenguajes de Programación
-#define NUMERO_RESERVADAS 60
-#define NUMERO_IDENTIFICADORES 100
-#define NUMERO_MAX_CARACTERES 35
-#define NUMEROS 200
-#define ERROR_LECTURA -1
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
+#define NUMERO_RESERVADAS 60
+#define NUMERO_IDENTIFICADORES 100
+#define NUMERO_MAX_CARACTERES 35
+#define NUMEROS 200
+#define ERROR_LECTURA -1
+
 typedef struct {
-    char key [NUMERO_MAX_CARACTERES];
-    int value;
-}HashMap;
+	char key [NUMERO_MAX_CARACTERES];
+	int value;
+} HashMap;
 
 HashMap TableReservadas[NUMERO_RESERVADAS];
 HashMap TableIdentificadores[NUMERO_IDENTIFICADORES];
@@ -24,19 +25,19 @@ int contadorId = 0;
 int contadorNumeros = 0;
 
 %}
+letra     [a-zA-Z]
+palabra   {letra}+
+alf       [a-zA-Z0-9]
+dig       [0-9]
+numeros   {dig}+
+fraccion  [.]{numeros}
+exponente [eE][+-]?{numeros}
+decimal   {numeros}{fraccion}?{exponente}?
+id        {letra}({alf}|"_")*
 %%
-"/*(.|\n)*/";
-"//".*"\n"  ;
-[\t]+       ;
-{letra}     [a-zA-Z];
-{palabra}   {letra}+;
-{alf}       [a-zA-Z0-9];
-{dig}       [0-9];
-{numeros}   {dig}+;
-{fraccion}  [.]{numeros};
-{exponente} [eE][+-]?{numeros};
-{decimal}   {numeros}{fraccion}?{exponente}?;
-{id}        {letra}({alf}|"_")*;
+"/*(.|\n)*/"    ;
+"//".*"\n"      ;
+[\t]+           ;
 abstract        {TableReservadas[0].value ++;}
 assert          {TableReservadas[1].value ++;}
 boolean         {TableReservadas[2].value ++;}
