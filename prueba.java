@@ -7,7 +7,9 @@ public class HelloWorld {
 
 	int aux = 3;
 	int aux2 = 4;
-	String aux3 = "aux3string con espacios";
+	String aux3 = "aux3string con espacios \n y saltos";
+	float aux4asd = 33.2;
+	String fallo = "public";
 	
     }
 
