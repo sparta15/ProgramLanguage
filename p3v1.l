@@ -14,23 +14,23 @@
 	* Lara Mongil, Víctor
 	* Pastor Díez, Guillermo
 	*/
-	 
+
 	#include <stdio.h>
 
-	#define NUMERO_RESERVADAS 60
-	#define NUMERO_IDENTIFICADORES 100
-	#define NUMERO_MAX_CARACTERES 35
-	#define NUMEROS 200
+	#define NUMERO_MAX_CARACTERES 200
 	#define ERROR_LECTURA -1
+	#define TAM_BUFFER 4
 
 	typedef struct {
 		char key [NUMERO_MAX_CARACTERES];
 		int value;
 	} HashMap;
 
-	HashMap tableReservadas[NUMERO_RESERVADAS];
-	HashMap tableIdentificadores[NUMERO_IDENTIFICADORES];
-	HashMap tableDigitos[NUMEROS];
+	HashMap *tableReservadas;
+	HashMap *tableIdentificadores;
+	HashMap *tableDigitos;
+
+	HashMap *aux;
 
 	int contadorReservadas = 0;
 	int contadorId = 0;
@@ -143,7 +143,11 @@ while           tableReservadas[49].value ++;
 
 %%
 
-void inicializarTablaReservadas() {
+void inicializarTablas() {
+	tableReservadas = (HashMap *) malloc ( (((contadorReservadas / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+	tableIdentificadores = (HashMap *) malloc ( (((contadorId / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+	tableDigitos = (HashMap *) malloc ( (((contadorNumeros / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+
     strcpy(tableReservadas[0].key, "abstract");
     strcpy(tableReservadas[1].key, "assert");
     strcpy(tableReservadas[2].key, "boolean");
@@ -197,16 +201,21 @@ void inicializarTablaReservadas() {
 }
 
 void sumaId(char yylex[]) {
-    int i;
-    int presente = 0;
-    for(i=0;i<NUMERO_IDENTIFICADORES;i++){
-        if(strcmp(yylex, tableIdentificadores[i].key)==0){
+		int i;
+		int presente = 0;
+
+		if ( (contadorId % TAM_BUFFER) < 2) {
+				tableIdentificadores = (HashMap *) realloc (tableIdentificadores, (((contadorId / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+		}
+
+    for(i = 0; i < contadorId; i++) {
+        if( strcmp(yylex, tableIdentificadores[i].key) == 0 ) {
             tableIdentificadores[i].value++;
-	    printf("hola");
             presente=1;
         }
     }
-    if(presente == 0) {
+
+    if( presente == 0 ) {
         strcpy(tableIdentificadores[contadorId].key, yylex);
         tableIdentificadores[contadorId].value++;
         contadorId++;
@@ -214,18 +223,21 @@ void sumaId(char yylex[]) {
 }
 
 void sumarNumero(char yylex[]) {
-    int a;
-    int presente = 0;
-    for(a=0;a<NUMEROS;a++){
+		int a;
+		int presente = 0;
+
+		if ( (contadorNumeros % TAM_BUFFER) < 2) {
+				tableDigitos = (HashMap *) realloc (tableDigitos, (((contadorNumeros / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+		}
+
+    for(a = 0; a < contadorNumeros; a++){
         if(strcmp(yylex, tableDigitos[a].key)==0){
             tableDigitos[a].value++;
-
-	    printf("hola");
-	    printf("%d", tableDigitos[a].value++);
             presente=1;
         }
     }
-    if(presente==0){
+
+    if ( presente == 0 ) {
         strcpy(tableDigitos[contadorNumeros].key, yylex);
         tableDigitos[contadorNumeros].value++;
         contadorNumeros++;
@@ -234,13 +246,10 @@ void sumarNumero(char yylex[]) {
 
 
 void escribeReservadas(){
+		int i;
     FILE *ficheroReservadas = fopen("reserv.txt", "w");
-    // if (ficheroReservadas  == NULL) {
-       // fprintf(stderr,"Error de fichero.\n");
-        //exit(ERROR_LECTURA);
-    //}
-    int i;
-    for(i=0;i<NUMERO_RESERVADAS;i++){
+
+    for(i = 0; i < contadorReservadas; i++){
         if(tableReservadas[i].value != 0){
             fprintf(ficheroReservadas, "%s : %d\n", tableReservadas[i].key, tableReservadas[i].value);
         }
@@ -249,13 +258,10 @@ void escribeReservadas(){
 }
 
 void escribeIds () {
+		int i;
     FILE *ficheroIds = fopen("identi.txt", "w");
-     //if (ficheroIds  == NULL) {
-       // fprintf(stderr,"Error de fichero.\n");
-        //exit(ERROR_LECTURA);
-    //}
-    int i;
-    for(i=0;i<NUMERO_IDENTIFICADORES;i++){
+
+    for(i = 0; i < contadorId; i++){
         if(tableIdentificadores[i].value != 0){
             fprintf(ficheroIds, "%s : %d\n", tableIdentificadores[i].key, tableIdentificadores[i].value);
         }
@@ -264,13 +270,10 @@ void escribeIds () {
 }
 
 void escribeNumeros () {
+		int i;
     FILE *ficheroNumeros = fopen("numero.txt", "w");
-    //if (ficheroNumeros  == NULL) {
-      //  fprintf(stderr,"Error de fichero.\n");
-       // exit(ERROR_LECTURA);
-   // }
-    int i;
-    for(i=0;i<NUMEROS;i++){
+
+    for(i = 0; i < contadorNumeros; i++){
         if(tableDigitos[i].value != 0){
             fprintf(ficheroNumeros, "%s : %d\n", tableDigitos[i].key, tableDigitos[i].value);
         }
@@ -283,7 +286,7 @@ int main( int argc, char** argv) {
     }else{
         yyin = stdin;
     }
-    inicializarTablaReservadas();
+    inicializarTablas();
     yylex();
     escribeReservadas();
     escribeIds();
