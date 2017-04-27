@@ -24,8 +24,8 @@ struct ElementoLista *tail;
 // };
 
 int preanalisis;
-char* tipo;
-char* identificador;
+char *tipo;
+char *identificador;
 
 void parea();
 void array();
@@ -72,24 +72,21 @@ char * simple () {
         return "BOOLEAN";
     } else {
         printf ("Error sintáctico en %s\n ", yytext);
-        // exit (EXIT_FAILURE);
-        debug();
-        preanalisis = yylex();
-        ambito();
+        exit (EXIT_FAILURE);
     }
 }
 
-
-void debug () {
-    struct ElementoLista *aux;
-    int i = 1;
-    aux = head;
-
-    while (aux != NULL) {
-      printf("%d: %s %s\n", i, aux->tipo, aux->id);
-      aux = aux->next;
-    }
-}
+//
+// void debug () {
+//     struct ElementoLista *aux;
+//     int i = 1;
+//     aux = head;
+//
+//     while (aux != NULL) {
+//       printf("%d: %s %s\n", i, aux->tipo, aux->id);
+//       aux = aux->next;
+//     }
+// }
 
 
 void guardarId(char* id, char* tipo) {
