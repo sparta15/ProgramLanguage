@@ -10,8 +10,9 @@
 #include <stdlib.h>
 
  struct ElementoLista {
-    char *tipo;
-    char *id;
+    char tipo[20];
+    char id[2000];
+    int dim;
     struct ElementoLista *next;
 };
 
@@ -25,16 +26,21 @@ struct ElementoLista *tail;
 
 int preanalisis;
 char *tipo;
-char *identificador;
+char identificador[2000];
+int dim;
 
 void parea();
 void array();
 void modificador();
 void ambito();
-char * simple();
+void simple();
+void getId();
 void debug();
+void escribirFichero();
 
 void parea (int token) {
+    printf("en parea\n");
+    // printf("prea = %d, token = %d, yytext = %s\n", preanalisis, token, yytext);
     if (preanalisis == token) {
         preanalisis = yylex();
     } else {
@@ -42,57 +48,74 @@ void parea (int token) {
         exit (EXIT_FAILURE);
     }
 }
-char * simple () {
+
+void preArray() {
+    printf("en preArray\n");
+    dim = 0;
+    array();
+}
+
+void simple () {
+    printf("en simple\n");
     if (preanalisis == INT) {
         parea (INT);
-        return "INT";
+        tipo = "INT";
+        preArray();
+    } else if (preanalisis == VOID) {
+        parea (VOID);
+        tipo = "VOID";
+        preArray();
     } else if (preanalisis == CHAR) {
         parea (CHAR);
-        return "CHAR";
+        tipo = "CHAR";
+        preArray();
     } else if (preanalisis == STRING ) {
         parea (STRING);
-        return "STRING";
+        tipo = "STRING";
+        preArray();
     } else if (preanalisis == DOUBLE) {
         parea (DOUBLE);
-        return "DOUBLE";
+        tipo = "DOUBLE";
+        preArray();
+    }else if (preanalisis == SCANNER) {
+        parea (SCANNER);
+        tipo = "SCANNER";
+        preArray();
     } else if (preanalisis == FLOAT ) {
         parea (FLOAT);
-        return "FLOAT";
+        tipo = "FLOAT";
+        preArray();
     } else if (preanalisis == LONG ) {
         parea (LONG);
-        return "LONG";
+        tipo = "LONG";
+        preArray();
     } else if (preanalisis == SHORT ) {
         parea (SHORT);
-        return "SHORT";
+        tipo = "SHORT";
+        preArray();
     } else if (preanalisis == BYTE ) {
         parea (BYTE);
-        return "BYTE";
+        tipo = "BYTE";
+        preArray();
     } else if (preanalisis == BOOLEAN ) {
         parea (BOOLEAN);
-        return "BOOLEAN";
+        tipo = "BOOLEAN";
+        preArray();
     } else {
-        printf ("Error sintáctico en %s\n ", yytext);
-        exit (EXIT_FAILURE);
+        preanalisis = yylex();
+        ambito();
     }
 }
 
-//
-// void debug () {
-//     struct ElementoLista *aux;
-//     int i = 1;
-//     aux = head;
-//
-//     while (aux != NULL) {
-//       printf("%d: %s %s\n", i, aux->tipo, aux->id);
-//       aux = aux->next;
-//     }
-// }
-
-
-void guardarId(char* id, char* tipo) {
+void guardarId() {
+    printf("en guardarId\n");
     struct ElementoLista* nuevoElemento = (struct ElementoLista*) malloc(sizeof(struct ElementoLista));
-    strcpy(id, nuevoElemento->id);
-    strcpy(tipo, nuevoElemento->tipo);
+    // nuevoElemento->id = (char*) malloc(2000 * sizeof(char));
+    // nuevoElemento->tipo = (char*) malloc(20 * sizeof(char));
+    // nuevoElemento
+    strcpy(nuevoElemento->id, identificador);
+    strcpy(nuevoElemento->tipo, tipo);
+    nuevoElemento->dim = dim;
     nuevoElemento->next = NULL;
     if (head == NULL) {
       head = tail = nuevoElemento;
@@ -100,17 +123,18 @@ void guardarId(char* id, char* tipo) {
       tail->next = nuevoElemento;
       tail = nuevoElemento;
     }
+    ambito();
 }
 
 //Puntero de este método esta mal --> Arreglar
-void recorrerLista(char* id, char* tipo) {
-    printf("recorrerLista: metodo encontrado");
+void recorrerLista() {
+    printf("en recorrerLista\n");
     struct ElementoLista *aux;
     int existe = 0;
     aux = head;
 
     while(aux != NULL) {
-        if ( strcmp(aux->id, id) && strcmp(aux->tipo, tipo) ) {
+        if ( strcmp(aux->id, identificador) && strcmp(aux->tipo, tipo) ) {
             existe = 1;
             break;
         }
@@ -118,47 +142,76 @@ void recorrerLista(char* id, char* tipo) {
     }
 
     if (!existe) {
-      guardarId(id, tipo);
+      guardarId();
+    } else {
+      ambito();
     }
 }
 
 void array () {
-    if(preanalisis = '[') {
-        parea('[');
-        if(preanalisis != ']') {
-            preanalisis = yylex();
+    printf("en array\n");
+    if(preanalisis == OPENARRAY) {
+        parea(OPENARRAY);
+        if (preanalisis == CLOSEARRAY) {
+          parea(CLOSEARRAY);
+          dim++;
+          array();
         } else {
-            parea(']');
+          preanalisis = yylex();
+          ambito();
         }
-        array();
+    } else {
+      getId();
+    }
+}
+
+void getId() {
+    printf("en getID\n");
+    if (preanalisis == ID) {
+      strcpy(identificador, yytext);
+      parea(ID);
+      // printf("en ID --> %s\n", yytext);
+      recorrerLista();
+    } else {
+      preanalisis = yylex();
+      ambito();
     }
 }
 
 void modificador () {
+    printf("en modificador\n");
     if(preanalisis == STATIC) {
         parea(STATIC);
     }
-    strcpy(tipo, simple());
-    array();
-    strcpy(identificador, yytext);
-    preanalisis = yylex();
-    if(preanalisis == '(') {
-        recorrerLista(identificador, tipo);
-    }
+    simple();
+
+    // printf("yytext = %s\n", yytext);
+    // strcpy(identificador, yytext);
+    // printf("tres\n");
+    // preanalisis = yylex();
+    // printf("cuatro %c %d\n", preanalisis, preanalisis);
+    // if(preanalisis == OPENPAREN) {
+    //     recorrerLista(identificador, tipo);
+    // }
 }
 
 void ambito () {
+    printf("en ambito\n");
     if(preanalisis == PUBLIC) {
         parea(PUBLIC);
     } else if (preanalisis == PRIVATE) {
         parea(PRIVATE);
     } else if (preanalisis == PROTECTED) {
         parea(PROTECTED);
+    } if (preanalisis != 0) {
+      modificador();
+    } else {
+      escribirFichero();
     }
-    modificador();
 }
 
 void escribirFichero() {
+    printf("en escribirFichero\n");
     struct ElementoLista *aux = head;
     FILE *fichero = fopen("tipoMetodos.txt", "w");
     while(aux != NULL){
