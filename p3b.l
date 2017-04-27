@@ -2,15 +2,15 @@
 #include "p3b.h"
 %}
 
-letra           [a-zA-Z];
-palabra         {letra}+;
-alf             [a-zA-Z0-9];
-dig             [0-9];
-numeros         {dig}+;
-fraccion        [.]{numeros};
-exponente       [eE][+-]?{numeros};
-decimal         {numeros}+{fraccion}?{exponente}?;
-id              {letra}({alf}|"_")*;
+letra           [a-zA-Z]
+palabra         {letra}+
+alf             [a-zA-Z0-9]
+dig             [0-9]
+numeros         {dig}+
+fraccion        [.]{numeros}
+exponente       [eE][+-]?{numeros}
+decimal         {numeros}+{fraccion}?{exponente}?
+id              {letra}({alf}|"_")*
 
 %%
 
@@ -67,6 +67,10 @@ boolean(" "|"[")+         return BOOLEAN;
 "?"                       |
 "{"                       |
 "}"                       |
-({id})                      return ID;
-
+{decimal}                 ;
+{id}                      return ID;
+" "                       |
+"\n"                      |
+"."                       |
+";"                       ;
 %%

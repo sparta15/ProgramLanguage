@@ -10,23 +10,29 @@
 #include <stdlib.h>
 
  struct ElementoLista {
-    char *tipo,
-    char *id,
+    char *tipo;
+    char *id;
     struct ElementoLista *next;
 };
 
-struct ListaIdentificar {
-    struct ElementoLista *head;
-    struct ElementoLista *end;
-}
+struct ElementoLista *head;
+struct ElementoLista *tail;
+
+// struct ListaIdentificar {
+//     struct ElementoLista *head;
+//     struct ElementoLista *end;
+// };
 
 int preanalisis;
+char* tipo;
+char* identificador;
 
 void parea();
 void array();
 void modificador();
 void ambito();
-void simple();
+char * simple();
+void debug();
 
 void parea (int token) {
     if (preanalisis == token) {
@@ -36,8 +42,7 @@ void parea (int token) {
         exit (EXIT_FAILURE);
     }
 }
-
-void simple () {
+char * simple () {
     if (preanalisis == INT) {
         parea (INT);
         return "INT";
@@ -67,7 +72,56 @@ void simple () {
         return "BOOLEAN";
     } else {
         printf ("Error sintáctico en %s\n ", yytext);
-        exit (EXIT_FAILURE);
+        // exit (EXIT_FAILURE);
+        debug();
+        preanalisis = yylex();
+        ambito();
+    }
+}
+
+
+void debug () {
+    struct ElementoLista *aux;
+    int i = 1;
+    aux = head;
+
+    while (aux != NULL) {
+      printf("%d: %s %s\n", i, aux->tipo, aux->id);
+      aux = aux->next;
+    }
+}
+
+
+void guardarId(char* id, char* tipo) {
+    struct ElementoLista* nuevoElemento = (struct ElementoLista*) malloc(sizeof(struct ElementoLista));
+    strcpy(id, nuevoElemento->id);
+    strcpy(tipo, nuevoElemento->tipo);
+    nuevoElemento->next = NULL;
+    if (head == NULL) {
+      head = tail = nuevoElemento;
+    } else {
+      tail->next = nuevoElemento;
+      tail = nuevoElemento;
+    }
+}
+
+//Puntero de este método esta mal --> Arreglar
+void recorrerLista(char* id, char* tipo) {
+    printf("recorrerLista: metodo encontrado");
+    struct ElementoLista *aux;
+    int existe = 0;
+    aux = head;
+
+    while(aux != NULL) {
+        if ( strcmp(aux->id, id) && strcmp(aux->tipo, tipo) ) {
+            existe = 1;
+            break;
+        }
+        aux = aux->next;
+    }
+
+    if (!existe) {
+      guardarId(id, tipo);
     }
 }
 
@@ -87,12 +141,12 @@ void modificador () {
     if(preanalisis == STATIC) {
         parea(STATIC);
     }
-    char* tipo = simple();
+    strcpy(tipo, simple());
     array();
-    char* id = preanalisis;
+    strcpy(identificador, yytext);
     preanalisis = yylex();
     if(preanalisis == '(') {
-        recorrerLista(&id, &tipo);
+        recorrerLista(identificador, tipo);
     }
 }
 
@@ -103,55 +157,32 @@ void ambito () {
         parea(PRIVATE);
     } else if (preanalisis == PROTECTED) {
         parea(PROTECTED);
-    } else if (preanalisis == DEFAULT) {
-        parea(DEFAULT);
     }
     modificador();
 }
 
-
-
-void guardarId(struct ListaIdentificar* punteroAuxiliar, char* id, char* tipo) {
-    struct ElementoLista* nuevoElemento = (struct ElementoLista*) malloc(sizeof(struct ElementoLista));
-    nuevoElemento->id = id;
-    nuevoElemento->tipo = tipo;
-    nuevoElemento->next = NULL;
-    punteroAuxiliar->end->next = nuevoElemento
-    punteroAuxiliar->end = nuevoElemento
-    return;
-}
-
-//Puntero de este método esta mal --> Arreglar
-void recorrerLista(struct ElementoLista* punteroAuxiliar, char* id, char* tipo) {
-    while(punteroAuxiliar != NULL){
-        if((head->id == id) && (head->tipo == tipo)) {
-            break;
-        }
-        guardarId(&id, &tipo);
-        struct ElementoLista tmp = head
-        head = head->next;
-        head->next = tmp->next->next;
-    }
-}
-
-void escribirFichero(struct ElementoLista* head) {
+void escribirFichero() {
+    struct ElementoLista *aux = head;
     FILE *fichero = fopen("tipoMetodos.txt", "w");
-    while(head != NULL){
-        fprintf(fichero, "%s : %s\n", lista->id, lista->tipo);
-        struct ElementoLista tmp = head
-        head = head->next;
-        head->next = tmp->next->next;
+    while(aux != NULL){
+        fprintf(fichero, "%s : %s\n", aux->id, aux->tipo);
+        aux = aux->next;
     }
     fclose(fichero);
 }
 
-main(){
-    struct ElementoLista* head = NULL;
+int main(){
+    head = NULL;
+    tail = NULL;
+
     preanalisis = yylex();
     ambito();
-    if (preanalisis == 0) // yylex() devuelve 0 en el fin de fichero
-        printf ("OK\n");
-    else
-        printf ("Sobra algo\n");
-}
 
+     // yylex() devuelve 0 en el fin de fichero
+    if (preanalisis == 0) {
+        printf ("OK\n");
+    } else {
+        printf ("Sobra algo\n");
+    }
+    return 0;
+}

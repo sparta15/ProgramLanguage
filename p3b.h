@@ -27,9 +27,3 @@
 #define CLOSEPAREN      277
 
 #define ID              278
-
-
-// ";"         |
-// "\n"        ;
-// " "         ;
-// "."         ;
