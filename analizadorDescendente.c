@@ -43,6 +43,7 @@ void parea (int token) {
     // printf("prea = %d, token = %d, yytext = %s\n", preanalisis, token, yytext);
     if (preanalisis == token) {
         preanalisis = yylex();
+	printf("%s",yytext);
     } else {
         printf ("Componente léxico inesperado en %s\n", yytext);
         exit (EXIT_FAILURE);
@@ -134,7 +135,7 @@ void recorrerLista() {
     aux = head;
 
     while(aux != NULL) {
-        if ( strcmp(aux->id, identificador) && strcmp(aux->tipo, tipo) ) {
+        if (!strcmp(aux->id, identificador) && !strcmp(aux->tipo, tipo) ) {
             existe = 1;
             break;
         }
@@ -171,7 +172,13 @@ void getId() {
       strcpy(identificador, yytext);
       parea(ID);
       // printf("en ID --> %s\n", yytext);
-      recorrerLista();
+    	if(preanalisis == OPENPAREN) {
+      		parea(OPENPAREN);
+      		recorrerLista();
+	}else{
+      	 preanalisis = yylex();
+         ambito();
+	}
     } else {
       preanalisis = yylex();
       ambito();
