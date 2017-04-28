@@ -1,5 +1,8 @@
 public class HelloWorld {
 
+     public static int[][] pruebaArrays(){
+
+    }
     public static void main(String[] args) {
         System.out.println("Hello, World");
       	int aux = 3;
@@ -9,5 +12,8 @@ public class HelloWorld {
       	String fallo = "public";
     }
 
-    private boolean metodo(String asd) {}
+    private boolean metodo(String asd) {
+
+    }
+
 }

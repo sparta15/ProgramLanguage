@@ -1,10 +1,18 @@
-//
-//  analizadorDescendente.c
-//
-//
-//  Created by Guillermo Pastor Diez on 26/4/17.
-//
-//
+/**
+* Universidad de Valladolid
+* E.T.S Ingeniería Informática
+* Grado en Ingeniería Informática
+* Mención de Ingeniería de Software
+*
+* Curso 2016/2017
+* Lenguajes de Programacion
+* Practica 3 Fase b
+*
+* Diego Cristóbal, Ester
+* Gutiérrez Casado, Carlos
+* Lara Mongil, Víctor
+* Pastor Díez, Guillermo
+*/
 
 #include "lex.yy.c"
 #include <stdlib.h>
@@ -18,11 +26,6 @@
 
 struct ElementoLista *head;
 struct ElementoLista *tail;
-
-// struct ListaIdentificar {
-//     struct ElementoLista *head;
-//     struct ElementoLista *end;
-// };
 
 int preanalisis;
 char *tipo;
@@ -39,11 +42,8 @@ void debug();
 void escribirFichero();
 
 void parea (int token) {
-    //printf("en parea\n");
-    // printf("prea = %d, token = %d, yytext = %s\n", preanalisis, token, yytext);
     if (preanalisis == token) {
         preanalisis = yylex();
-	//printf("%s",yytext);
     } else {
         printf ("Componente léxico inesperado en %s\n", yytext);
         exit (EXIT_FAILURE);
@@ -51,13 +51,11 @@ void parea (int token) {
 }
 
 void preArray() {
-    //printf("en preArray\n");
     dim = 0;
     array();
 }
 
 void simple () {
-    //printf("en simple\n");
     if (preanalisis == INT) {
         parea (INT);
         tipo = "INT";
@@ -109,33 +107,31 @@ void simple () {
 }
 
 void guardarId() {
-    //printf("en guardarId\n");
     struct ElementoLista* nuevoElemento = (struct ElementoLista*) malloc(sizeof(struct ElementoLista));
-    // nuevoElemento->id = (char*) malloc(2000 * sizeof(char));
-    // nuevoElemento->tipo = (char*) malloc(20 * sizeof(char));
-    // nuevoElemento
+
     strcpy(nuevoElemento->id, identificador);
     strcpy(nuevoElemento->tipo, tipo);
     nuevoElemento->dim = dim;
     nuevoElemento->next = NULL;
+
     if (head == NULL) {
       head = tail = nuevoElemento;
     } else {
       tail->next = nuevoElemento;
       tail = nuevoElemento;
     }
+
     ambito();
 }
 
-//Puntero de este método esta mal --> Arreglar
 void recorrerLista() {
-    //printf("en recorrerLista\n");
     struct ElementoLista *aux;
     int existe = 0;
     aux = head;
 
     while(aux != NULL) {
-        if (!strcmp(aux->id, identificador) && !strcmp(aux->tipo, tipo) ) {
+        if ( (strcmp(aux->id, identificador) == 0) &&
+             (strcmp(aux->tipo, tipo) == 0)  && aux->dim == dim) {
             existe = 1;
             break;
         }
@@ -150,7 +146,6 @@ void recorrerLista() {
 }
 
 void array () {
-    //printf("en array\n");
     if(preanalisis == OPENARRAY) {
         parea(OPENARRAY);
         if (preanalisis == CLOSEARRAY) {
@@ -158,7 +153,7 @@ void array () {
           dim++;
           array();
         } else {
-          preanalisis = yylex();
+          // preanalisis = yylex();
           ambito();
         }
     } else {
@@ -167,43 +162,30 @@ void array () {
 }
 
 void getId() {
-    //printf("en getID\n");
     if (preanalisis == ID) {
       strcpy(identificador, yytext);
       parea(ID);
-      // printf("en ID --> %s\n", yytext);
     	if(preanalisis == OPENPAREN) {
       		parea(OPENPAREN);
       		recorrerLista();
-	}else{
-      	 preanalisis = yylex();
-         ambito();
-	}
+    	}else{
+          	//  preanalisis = yylex();
+             ambito();
+    	}
     } else {
-      preanalisis = yylex();
+      // preanalisis = yylex();
       ambito();
     }
 }
 
 void modificador () {
-    //printf("en modificador\n");
     if(preanalisis == STATIC) {
         parea(STATIC);
     }
     simple();
-
-    // printf("yytext = %s\n", yytext);
-    // strcpy(identificador, yytext);
-    // printf("tres\n");
-    // preanalisis = yylex();
-    // printf("cuatro %c %d\n", preanalisis, preanalisis);
-    // if(preanalisis == OPENPAREN) {
-    //     recorrerLista(identificador, tipo);
-    // }
 }
 
 void ambito () {
-   // printf("en ambito\n");
     if(preanalisis == PUBLIC) {
         parea(PUBLIC);
     } else if (preanalisis == PRIVATE) {
@@ -218,11 +200,16 @@ void ambito () {
 }
 
 void escribirFichero() {
-    //printf("en escribirFichero\n");
     struct ElementoLista *aux = head;
+    int i = 1;
     FILE *fichero = fopen("tipoMetodos.txt", "w");
+
     while(aux != NULL){
-        fprintf(fichero, "%s : %s\n", aux->id, aux->tipo);
+        fprintf(fichero, "%s : %s ", aux->id, aux->tipo);
+        for (i = 0; i < aux->dim; i++) {
+          fprintf(fichero, "[]");
+        }
+        fprintf(fichero, "\n");
         aux = aux->next;
     }
     fclose(fichero);

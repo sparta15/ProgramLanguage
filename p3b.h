@@ -1,3 +1,19 @@
+/**
+* Universidad de Valladolid
+* E.T.S Ingeniería Informática
+* Grado en Ingeniería Informática
+* Mención de Ingeniería de Software
+*
+* Curso 2016/2017
+* Lenguajes de Programacion
+* Practica 3 Fase a
+*
+* Diego Cristóbal, Ester
+* Gutiérrez Casado, Carlos
+* Lara Mongil, Víctor
+* Pastor Díez, Guillermo
+*/
+
 /* ambito */
 #define PUBLIC          258
 #define PRIVATE         259
@@ -26,4 +42,5 @@
 #define OPENPAREN       276
 #define CLOSEPAREN      277
 
+/* id */
 #define ID              278

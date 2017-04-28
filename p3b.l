@@ -1,5 +1,21 @@
 %{
-#include "p3b.h"
+    /**
+  	* Universidad de Valladolid
+  	* E.T.S Ingeniería Informática
+  	* Grado en Ingeniería Informática
+  	* Mención de Ingeniería de Software
+  	*
+  	* Curso 2016/2017
+  	* Lenguajes de Programacion
+  	* Practica 3 Fase b
+  	*
+  	* Diego Cristóbal, Ester
+  	* Gutiérrez Casado, Carlos
+  	* Lara Mongil, Víctor
+  	* Pastor Díez, Guillermo
+  	*/
+
+    #include "p3b.h"
 %}
 
 letra           [a-zA-Z]
@@ -23,17 +39,17 @@ private" "+               return PRIVATE;
 protected" "+             return PROTECTED;
 static" "+                return STATIC;
 abstract" "+              return ABSTRACT;
-void(" "|"[")+            return VOID;
-double(" "|"[")+          return DOUBLE;
-int(" "|"[")+             return INT;
-float(" "|"[")+           return FLOAT;
-String(" "|"[")+          return STRING;
-char(" "|"[")+            return CHAR;
-Scanner(" "|"[")+         return SCANNER;
-byte(" "|"[")+            return BYTE;
-short(" "|"[")+           return SHORT;
-long(" "|"[")+            return LONG;
-boolean(" "|"[")+         return BOOLEAN;
+void                      return VOID;
+double                    return DOUBLE;
+int                       return INT;
+float                     return FLOAT;
+String                    return STRING;
+char                      return CHAR;
+Scanner                   return SCANNER;
+byte                      return BYTE;
+short                     return SHORT;
+long                      return LONG;
+boolean                   return BOOLEAN;
 "["                       return OPENARRAY;
 "]"                       return CLOSEARRAY;
 "("                       return OPENPAREN;
