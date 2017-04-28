@@ -153,7 +153,6 @@ void array () {
           dim++;
           array();
         } else {
-          // preanalisis = yylex();
           ambito();
         }
     } else {
@@ -169,11 +168,9 @@ void getId() {
       		parea(OPENPAREN);
       		recorrerLista();
     	}else{
-          	//  preanalisis = yylex();
              ambito();
     	}
     } else {
-      // preanalisis = yylex();
       ambito();
     }
 }
