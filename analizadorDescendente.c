@@ -39,10 +39,11 @@ void debug();
 void escribirFichero();
 
 void parea (int token) {
-    printf("en parea\n");
+    //printf("en parea\n");
     // printf("prea = %d, token = %d, yytext = %s\n", preanalisis, token, yytext);
     if (preanalisis == token) {
         preanalisis = yylex();
+	//printf("%s",yytext);
     } else {
         printf ("Componente léxico inesperado en %s\n", yytext);
         exit (EXIT_FAILURE);
@@ -50,13 +51,13 @@ void parea (int token) {
 }
 
 void preArray() {
-    printf("en preArray\n");
+    //printf("en preArray\n");
     dim = 0;
     array();
 }
 
 void simple () {
-    printf("en simple\n");
+    //printf("en simple\n");
     if (preanalisis == INT) {
         parea (INT);
         tipo = "INT";
@@ -108,7 +109,7 @@ void simple () {
 }
 
 void guardarId() {
-    printf("en guardarId\n");
+    //printf("en guardarId\n");
     struct ElementoLista* nuevoElemento = (struct ElementoLista*) malloc(sizeof(struct ElementoLista));
     // nuevoElemento->id = (char*) malloc(2000 * sizeof(char));
     // nuevoElemento->tipo = (char*) malloc(20 * sizeof(char));
@@ -128,13 +129,13 @@ void guardarId() {
 
 //Puntero de este método esta mal --> Arreglar
 void recorrerLista() {
-    printf("en recorrerLista\n");
+    //printf("en recorrerLista\n");
     struct ElementoLista *aux;
     int existe = 0;
     aux = head;
 
     while(aux != NULL) {
-        if ( strcmp(aux->id, identificador) && strcmp(aux->tipo, tipo) ) {
+        if (!strcmp(aux->id, identificador) && !strcmp(aux->tipo, tipo) ) {
             existe = 1;
             break;
         }
@@ -149,7 +150,7 @@ void recorrerLista() {
 }
 
 void array () {
-    printf("en array\n");
+    //printf("en array\n");
     if(preanalisis == OPENARRAY) {
         parea(OPENARRAY);
         if (preanalisis == CLOSEARRAY) {
@@ -166,12 +167,18 @@ void array () {
 }
 
 void getId() {
-    printf("en getID\n");
+    //printf("en getID\n");
     if (preanalisis == ID) {
       strcpy(identificador, yytext);
       parea(ID);
       // printf("en ID --> %s\n", yytext);
-      recorrerLista();
+    	if(preanalisis == OPENPAREN) {
+      		parea(OPENPAREN);
+      		recorrerLista();
+	}else{
+      	 preanalisis = yylex();
+         ambito();
+	}
     } else {
       preanalisis = yylex();
       ambito();
@@ -179,7 +186,7 @@ void getId() {
 }
 
 void modificador () {
-    printf("en modificador\n");
+    //printf("en modificador\n");
     if(preanalisis == STATIC) {
         parea(STATIC);
     }
@@ -196,7 +203,7 @@ void modificador () {
 }
 
 void ambito () {
-    printf("en ambito\n");
+   // printf("en ambito\n");
     if(preanalisis == PUBLIC) {
         parea(PUBLIC);
     } else if (preanalisis == PRIVATE) {
@@ -211,7 +218,7 @@ void ambito () {
 }
 
 void escribirFichero() {
-    printf("en escribirFichero\n");
+    //printf("en escribirFichero\n");
     struct ElementoLista *aux = head;
     FILE *fichero = fopen("tipoMetodos.txt", "w");
     while(aux != NULL){
