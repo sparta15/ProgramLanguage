@@ -64,12 +64,6 @@ resto : '('
               if(metodo_padre == null){
                   listaMetodos.add(new ArrayList<>());
                   listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
-              }else{
-                  for(int i=0;i<listaMetodos.size();i++){
-                      if(listaMetodos.get(i).get(0).equals(metodo_padre)){
-                          listaMetodos.get(i).add(identificador_metodo);
-                      }
-                  }
               }
         }
          params ')' def
@@ -103,6 +97,15 @@ codigo : identificador=ID
                     System.out.println("*************PADRES CONOCIDOS");
                     System.out.println("Metodo padre: "+metodo_padre);
                     System.out.println("Metodo hijo: "+ identificador_metodo);
+                    if(metodo_padre == null){
+                        listaMetodos.add(new ArrayList<>());
+                        listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
+                    }
+                    for(int i=0;i<listaMetodos.size();i++){
+                      if(listaMetodos.get(i).get(0).equals(metodo_padre)){
+                          listaMetodos.get(i).add(identificador_metodo);
+                      }
+                    }
                     //Add metodo listaMetodos
             }
          '('codigo ')' codigo
