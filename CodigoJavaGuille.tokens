@@ -8,6 +8,7 @@ ID=7
 LETTER=8
 DIGIT=9
 WS=10
+SYSTEM=11
 '{'=1
 '}'=2
 ';'=3

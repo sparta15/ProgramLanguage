@@ -21,7 +21,7 @@ public class CodigoJavaGuilleParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, CLASS=6, ID=7, LETTER=8, DIGIT=9, 
-		WS=10;
+		WS=10, SYSTEM=11;
 	public static final int
 		RULE_prog = 0, RULE_idspc = 1, RULE_clase = 2, RULE_resto = 3, RULE_def = 4, 
 		RULE_ids = 5, RULE_codigo = 6, RULE_params = 7;
@@ -34,7 +34,7 @@ public class CodigoJavaGuilleParser extends Parser {
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, null, null, null, null, null, "CLASS", "ID", "LETTER", "DIGIT", 
-		"WS"
+		"WS", "SYSTEM"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -136,29 +136,29 @@ public class CodigoJavaGuilleParser extends Parser {
 			setState(21);
 			match(T__1);
 
-			        try {
-			            File fichero = new File("ficheroSalida.txt");
-			            FileWriter escrituraFichero = new FileWriter(fichero, false);
-			            for(int i=0; i< listaMetodos.size(); i++){
-			                for(int j = 0; j< listaMetodos.get(i).size(); j++){
-			                    if(j == 0) {
-			                        escrituraFichero.write(listaMetodos.get(i).get(j)+"\n");
-			                    } else {
-			                        escrituraFichero.write("\t"+listaMetodos.get(i).get(j)+"\n");
+			           try {
+			                File fichero = new File("ficheroSalida.txt");
+			                FileWriter escrituraFichero = new FileWriter(fichero, false);
+			                for(int i=0; i< listaMetodos.size(); i++){
+			                    for(int j = 0; j< listaMetodos.get(i).size(); j++){
+			                        if(j == 0) {
+			                            escrituraFichero.write(listaMetodos.get(i).get(j)+"\n");
+			                        } else {
+			                            escrituraFichero.write("\t"+listaMetodos.get(i).get(j)+"\n");
+			                        }
 			                    }
 			                }
-			            }
-			            /*
-			            System.out.println("DEBUG: escribiendofichero:");
-			            for(int j = 0 ; j < listaMetodos.size(); j++){
-			                for(int a = 0; a < listaMetodos.get(j).size(); a++) {
-			                    System.out.println(listaMetodos.get(j).get(a));
+			                /*
+			                System.out.println("DEBUG: escribiendofichero:");
+			                for(int j = 0 ; j < listaMetodos.size(); j++){
+			                    for(int a = 0; a < listaMetodos.get(j).size(); a++) {
+			                        System.out.println(listaMetodos.get(j).get(a));
+			                    }
 			                }
-			            }
-			            */
-			            escrituraFichero.close();
-			        } catch(IOException exception){};
-			    
+			                */
+			                escrituraFichero.close();
+			            } catch(IOException exception){};
+			        
 			}
 		}
 		catch (RecognitionException re) {
@@ -267,19 +267,24 @@ public class CodigoJavaGuilleParser extends Parser {
 		ClaseContext _localctx = new ClaseContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_clase);
 		try {
-			setState(37);
+			setState(38);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(31);
-				((ClaseContext)_localctx).tipo = match(ID);
-				setState(32);
-				((ClaseContext)_localctx).metodo = match(ID);
-				setState(33);
 				ids();
-				setState(34);
+				setState(32);
+				((ClaseContext)_localctx).tipo = match(ID);
+				setState(33);
+				((ClaseContext)_localctx).metodo = match(ID);
+
+				            //System.out.println("oooooooo");
+				            //System.out.println("Identificador de metodo: "+(((ClaseContext)_localctx).metodo!=null?((ClaseContext)_localctx).metodo.getText():null));
+				            identificador_metodo=(((ClaseContext)_localctx).metodo!=null?((ClaseContext)_localctx).metodo.getText():null);
+				        
+				setState(35);
 				resto();
 				}
 				break;
@@ -331,38 +336,42 @@ public class CodigoJavaGuilleParser extends Parser {
 		RestoContext _localctx = new RestoContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_resto);
 		try {
-			setState(47);
+			setState(48);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case T__3:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(39);
-				match(T__3);
 				setState(40);
-				params();
-				setState(41);
-				match(T__4);
+				match(T__3);
+
+				              System.out.println("*********DEFINICION");
+				              System.out.println("Metodo padre: "+metodo_padre);
+				              System.out.println("Metodo Dentro: "+ identificador_metodo);
+				              if(metodo_padre == null){
+				                  listaMetodos.add(new ArrayList<>());
+				                  listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
+				              }
+				        
 				setState(42);
-				def();
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
+				params();
+				setState(43);
+				match(T__4);
 				setState(44);
 				def();
 				}
 				break;
-			case 3:
-				enterOuterAlt(_localctx, 3);
+			case T__2:
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(45);
-				match(T__2);
 				setState(46);
+				match(T__2);
+				setState(47);
 				clase();
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -401,28 +410,37 @@ public class CodigoJavaGuilleParser extends Parser {
 		DefContext _localctx = new DefContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_def);
 		try {
-			setState(56);
+			setState(59);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(49);
-				match(T__0);
 				setState(50);
-				codigo();
-				setState(51);
-				match(T__1);
+				match(T__0);
+
+				                metodo_padre=identificador_metodo;
+				                //System.out.println("*************BASTARDOS");
+				                //System.out.println("Metodo DEF: "+metodo_padre);
+				                //Add metodo listaMetodos
+				        
 				setState(52);
+				codigo();
+				setState(53);
+				match(T__1);
+
+				            metodo_padre=null;
+				        
+				setState(55);
 				clase();
 				}
 				break;
 			case T__2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(54);
+				setState(57);
 				match(T__2);
-				setState(55);
+				setState(58);
 				clase();
 				}
 				break;
@@ -464,27 +482,23 @@ public class CodigoJavaGuilleParser extends Parser {
 		IdsContext _localctx = new IdsContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_ids);
 		try {
-			setState(61);
+			setState(64);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case ID:
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(58);
+				setState(61);
 				match(ID);
-				setState(59);
+				setState(62);
 				ids();
 				}
 				break;
-			case T__0:
-			case T__2:
-			case T__3:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -507,6 +521,7 @@ public class CodigoJavaGuilleParser extends Parser {
 			return getRuleContext(CodigoContext.class,i);
 		}
 		public TerminalNode ID() { return getToken(CodigoJavaGuilleParser.ID, 0); }
+		public TerminalNode DIGIT() { return getToken(CodigoJavaGuilleParser.DIGIT, 0); }
 		public CodigoContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -525,69 +540,83 @@ public class CodigoJavaGuilleParser extends Parser {
 		CodigoContext _localctx = new CodigoContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_codigo);
 		try {
-			setState(81);
+			setState(85);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(63);
+				setState(66);
 				((CodigoContext)_localctx).identificador = match(ID);
 
 				              identificador_metodo=(((CodigoContext)_localctx).identificador!=null?((CodigoContext)_localctx).identificador.getText():null);
 				          
-				setState(65);
+				setState(68);
 				codigo();
 				}
 				break;
 			case T__2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(66);
+				setState(69);
 				match(T__2);
-				setState(67);
+				setState(70);
 				codigo();
 				}
 				break;
 			case T__3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(68);
-				match(T__3);
 
-				              System.out.println("Metodo padre: "+metodo_padre);
-				              System.out.println("Metodo Dentro: "+ identificador_metodo);
-				          
-				setState(70);
-				codigo();
-				setState(71);
-				match(T__4);
+				                    System.out.println("*************PADRES CONOCIDOS");
+				                    System.out.println("Metodo padre: "+metodo_padre);
+				                    System.out.println("Metodo hijo: "+ identificador_metodo);
+				                    if(metodo_padre == null){
+				                        listaMetodos.add(new ArrayList<>());
+				                        listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
+				                    }
+				                    for(int i=0;i<listaMetodos.size();i++){
+				                      if(listaMetodos.get(i).get(0).equals(metodo_padre)){
+				                          listaMetodos.get(i).add(identificador_metodo);
+				                      }
+				                    }
+				                    //Add metodo listaMetodos
+				            
 				setState(72);
+				match(T__3);
+				setState(73);
+				codigo();
+				setState(74);
+				match(T__4);
+				setState(75);
 				codigo();
 				}
 				break;
 			case T__0:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(74);
-				match(T__0);
-
-				                metodo_padre=identificador_metodo;
-				                System.out.println("*************DEBUG");
-				                System.out.println("Metodo: "+metodo_padre);
-				                //Add metodo listaMetodos
-				            
-				setState(76);
-				codigo();
 				setState(77);
-				match(T__1);
+				match(T__0);
 				setState(78);
+				codigo();
+				setState(79);
+				match(T__1);
+				setState(80);
+				codigo();
+				}
+				break;
+			case DIGIT:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(82);
+				match(DIGIT);
+				setState(83);
 				codigo();
 				}
 				break;
 			case T__1:
 			case T__4:
-				enterOuterAlt(_localctx, 5);
+				enterOuterAlt(_localctx, 6);
 				{
 				}
 				break;
@@ -629,15 +658,15 @@ public class CodigoJavaGuilleParser extends Parser {
 		ParamsContext _localctx = new ParamsContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_params);
 		try {
-			setState(86);
+			setState(90);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ID:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(83);
+				setState(87);
 				match(ID);
-				setState(84);
+				setState(88);
 				params();
 				}
 				break;
@@ -662,28 +691,29 @@ public class CodigoJavaGuilleParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\f[\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\r_\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3\2\3\2"+
-		"\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3 \n\3\3\4\3\4\3\4\3\4\3\4\3\4\5\4"+
-		"(\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\62\n\5\3\6\3\6\3\6\3\6\3\6\3"+
-		"\6\3\6\5\6;\n\6\3\7\3\7\3\7\5\7@\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3"+
-		"\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\bT\n\b\3\t\3\t\3\t\5\tY\n\t\3"+
-		"\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2^\2\22\3\2\2\2\4\37\3\2\2\2\6\'\3\2\2"+
-		"\2\b\61\3\2\2\2\n:\3\2\2\2\f?\3\2\2\2\16S\3\2\2\2\20X\3\2\2\2\22\23\5"+
-		"\4\3\2\23\24\7\b\2\2\24\25\7\t\2\2\25\26\7\3\2\2\26\27\5\6\4\2\27\30\7"+
-		"\4\2\2\30\31\b\2\1\2\31\3\3\2\2\2\32\33\7\t\2\2\33 \5\4\3\2\34\35\7\5"+
-		"\2\2\35 \5\4\3\2\36 \3\2\2\2\37\32\3\2\2\2\37\34\3\2\2\2\37\36\3\2\2\2"+
-		" \5\3\2\2\2!\"\7\t\2\2\"#\7\t\2\2#$\5\f\7\2$%\5\b\5\2%(\3\2\2\2&(\3\2"+
-		"\2\2\'!\3\2\2\2\'&\3\2\2\2(\7\3\2\2\2)*\7\6\2\2*+\5\20\t\2+,\7\7\2\2,"+
-		"-\5\n\6\2-\62\3\2\2\2.\62\5\n\6\2/\60\7\5\2\2\60\62\5\6\4\2\61)\3\2\2"+
-		"\2\61.\3\2\2\2\61/\3\2\2\2\62\t\3\2\2\2\63\64\7\3\2\2\64\65\5\16\b\2\65"+
-		"\66\7\4\2\2\66\67\5\6\4\2\67;\3\2\2\289\7\5\2\29;\5\6\4\2:\63\3\2\2\2"+
-		":8\3\2\2\2;\13\3\2\2\2<=\7\t\2\2=@\5\f\7\2>@\3\2\2\2?<\3\2\2\2?>\3\2\2"+
-		"\2@\r\3\2\2\2AB\7\t\2\2BC\b\b\1\2CT\5\16\b\2DE\7\5\2\2ET\5\16\b\2FG\7"+
-		"\6\2\2GH\b\b\1\2HI\5\16\b\2IJ\7\7\2\2JK\5\16\b\2KT\3\2\2\2LM\7\3\2\2M"+
-		"N\b\b\1\2NO\5\16\b\2OP\7\4\2\2PQ\5\16\b\2QT\3\2\2\2RT\3\2\2\2SA\3\2\2"+
-		"\2SD\3\2\2\2SF\3\2\2\2SL\3\2\2\2SR\3\2\2\2T\17\3\2\2\2UV\7\t\2\2VY\5\20"+
-		"\t\2WY\3\2\2\2XU\3\2\2\2XW\3\2\2\2Y\21\3\2\2\2\t\37\'\61:?SX";
+		"\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3 \n\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4"+
+		"\5\4)\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\63\n\5\3\6\3\6\3\6\3\6\3"+
+		"\6\3\6\3\6\3\6\3\6\5\6>\n\6\3\7\3\7\3\7\5\7C\n\7\3\b\3\b\3\b\3\b\3\b\3"+
+		"\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\bX\n\b\3\t\3"+
+		"\t\3\t\5\t]\n\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2b\2\22\3\2\2\2\4\37\3"+
+		"\2\2\2\6(\3\2\2\2\b\62\3\2\2\2\n=\3\2\2\2\fB\3\2\2\2\16W\3\2\2\2\20\\"+
+		"\3\2\2\2\22\23\5\4\3\2\23\24\7\b\2\2\24\25\7\t\2\2\25\26\7\3\2\2\26\27"+
+		"\5\6\4\2\27\30\7\4\2\2\30\31\b\2\1\2\31\3\3\2\2\2\32\33\7\t\2\2\33 \5"+
+		"\4\3\2\34\35\7\5\2\2\35 \5\4\3\2\36 \3\2\2\2\37\32\3\2\2\2\37\34\3\2\2"+
+		"\2\37\36\3\2\2\2 \5\3\2\2\2!\"\5\f\7\2\"#\7\t\2\2#$\7\t\2\2$%\b\4\1\2"+
+		"%&\5\b\5\2&)\3\2\2\2\')\3\2\2\2(!\3\2\2\2(\'\3\2\2\2)\7\3\2\2\2*+\7\6"+
+		"\2\2+,\b\5\1\2,-\5\20\t\2-.\7\7\2\2./\5\n\6\2/\63\3\2\2\2\60\61\7\5\2"+
+		"\2\61\63\5\6\4\2\62*\3\2\2\2\62\60\3\2\2\2\63\t\3\2\2\2\64\65\7\3\2\2"+
+		"\65\66\b\6\1\2\66\67\5\16\b\2\678\7\4\2\289\b\6\1\29:\5\6\4\2:>\3\2\2"+
+		"\2;<\7\5\2\2<>\5\6\4\2=\64\3\2\2\2=;\3\2\2\2>\13\3\2\2\2?@\7\t\2\2@C\5"+
+		"\f\7\2AC\3\2\2\2B?\3\2\2\2BA\3\2\2\2C\r\3\2\2\2DE\7\t\2\2EF\b\b\1\2FX"+
+		"\5\16\b\2GH\7\5\2\2HX\5\16\b\2IJ\b\b\1\2JK\7\6\2\2KL\5\16\b\2LM\7\7\2"+
+		"\2MN\5\16\b\2NX\3\2\2\2OP\7\3\2\2PQ\5\16\b\2QR\7\4\2\2RS\5\16\b\2SX\3"+
+		"\2\2\2TU\7\13\2\2UX\5\16\b\2VX\3\2\2\2WD\3\2\2\2WG\3\2\2\2WI\3\2\2\2W"+
+		"O\3\2\2\2WT\3\2\2\2WV\3\2\2\2X\17\3\2\2\2YZ\7\t\2\2Z]\5\20\t\2[]\3\2\2"+
+		"\2\\Y\3\2\2\2\\[\3\2\2\2]\21\3\2\2\2\t\37(\62=BW\\";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

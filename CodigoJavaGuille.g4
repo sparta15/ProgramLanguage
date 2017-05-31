@@ -49,8 +49,6 @@ idspc : ID idspc
 
 clase : ids tipo=ID metodo=ID
         {
-            //System.out.println("oooooooo");
-            //System.out.println("Identificador de metodo: "+$metodo.text);
             identificador_metodo=$metodo.text;
         }
         resto
@@ -72,9 +70,6 @@ resto : '('
 def : '{'
         {
                 metodo_padre=identificador_metodo;
-                //System.out.println("*************BASTARDOS");
-                //System.out.println("Metodo DEF: "+metodo_padre);
-                //Add metodo listaMetodos
         }
         codigo '}'
         {
@@ -97,16 +92,11 @@ codigo : identificador=ID
                     System.out.println("*************PADRES CONOCIDOS");
                     System.out.println("Metodo padre: "+metodo_padre);
                     System.out.println("Metodo hijo: "+ identificador_metodo);
-                    if(metodo_padre == null){
-                        listaMetodos.add(new ArrayList<>());
-                        listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
-                    }
                     for(int i=0;i<listaMetodos.size();i++){
                       if(listaMetodos.get(i).get(0).equals(metodo_padre)){
                           listaMetodos.get(i).add(identificador_metodo);
                       }
                     }
-                    //Add metodo listaMetodos
             }
          '('codigo ')' codigo
          |'{'codigo '}' codigo
