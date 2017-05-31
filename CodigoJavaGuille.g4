@@ -15,7 +15,33 @@ grammar CodigoJavaGuille;
     String metodo_dentro;
 }
 
-prog : idspc CLASS ID '{' clase '}';
+prog : idspc CLASS ID '{' clase '}'
+         //Apertura de fichero y escritura de listaMetodos
+       {
+           try {
+                File fichero = new File("ficheroSalida.txt");
+                FileWriter escrituraFichero = new FileWriter(fichero, false);
+                for(int i=0; i< listaMetodos.size(); i++){
+                    for(int j = 0; j< listaMetodos.get(i).size(); j++){
+                        if(j == 0) {
+                            escrituraFichero.write(listaMetodos.get(i).get(j)+"\n");
+                        } else {
+                            escrituraFichero.write("\t"+listaMetodos.get(i).get(j)+"\n");
+                        }
+                    }
+                }
+                /*
+                System.out.println("DEBUG: escribiendofichero:");
+                for(int j = 0 ; j < listaMetodos.size(); j++){
+                    for(int a = 0; a < listaMetodos.get(j).size(); a++) {
+                        System.out.println(listaMetodos.get(j).get(a));
+                    }
+                }
+                */
+                escrituraFichero.close();
+            } catch(IOException exception){};
+        }
+        ;
 
 idspc : ID idspc
         | ';' idspc
@@ -23,8 +49,8 @@ idspc : ID idspc
 
 clase : ids tipo=ID metodo=ID
         {
-            System.out.println("oooooooo");
-            System.out.println("Identificador de metodo: "+$metodo.text);
+            //System.out.println("oooooooo");
+            //System.out.println("Identificador de metodo: "+$metodo.text);
             identificador_metodo=$metodo.text;
         }
         resto
@@ -32,9 +58,19 @@ clase : ids tipo=ID metodo=ID
 
 resto : '('
         {
-              System.out.println("Entro");
+              System.out.println("*********DEFINICION");
               System.out.println("Metodo padre: "+metodo_padre);
               System.out.println("Metodo Dentro: "+ identificador_metodo);
+              if(metodo_padre == null){
+                  listaMetodos.add(new ArrayList<>());
+                  listaMetodos.get(listaMetodos.size() - 1).add(identificador_metodo);
+              }else{
+                  for(int i=0;i<listaMetodos.size();i++){
+                      if(listaMetodos.get(i).get(0).equals(metodo_padre)){
+                          listaMetodos.get(i).add(identificador_metodo);
+                      }
+                  }
+              }
         }
          params ')' def
         | ';' clase ;
@@ -42,8 +78,8 @@ resto : '('
 def : '{'
         {
                 metodo_padre=identificador_metodo;
-                System.out.println("*************DEF");
-                System.out.println("Metodo DEF: "+metodo_padre);
+                //System.out.println("*************BASTARDOS");
+                //System.out.println("Metodo DEF: "+metodo_padre);
                 //Add metodo listaMetodos
         }
         codigo '}'
@@ -64,13 +100,14 @@ codigo : identificador=ID
          | ';' codigo
          |
             {
-                    System.out.println("*************DEBUG");
+                    System.out.println("*************PADRES CONOCIDOS");
                     System.out.println("Metodo padre: "+metodo_padre);
                     System.out.println("Metodo hijo: "+ identificador_metodo);
                     //Add metodo listaMetodos
             }
          '('codigo ')' codigo
          |'{'codigo '}' codigo
+         | DIGIT codigo
          | ;
 
 params : ID params
