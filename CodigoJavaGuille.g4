@@ -15,45 +15,42 @@ grammar CodigoJavaGuille;
     String metodo_dentro;
 }
 
-prog : idspc CLASS ID '{' clase '}'
-       //Apertura de fichero y escritura de listaMetodos
-    {
-        try {
-            File fichero = new File("ficheroSalida.txt");
-            FileWriter escrituraFichero = new FileWriter(fichero, false);
-            for(int i=0; i< listaMetodos.size(); i++){
-                for(int j = 0; j< listaMetodos.get(i).size(); j++){
-                    if(j == 0) {
-                        escrituraFichero.write(listaMetodos.get(i).get(j)+"\n");
-                    } else {
-                        escrituraFichero.write("\t"+listaMetodos.get(i).get(j)+"\n");
-                    }
-                }
-            }
-            /*
-            System.out.println("DEBUG: escribiendofichero:");
-            for(int j = 0 ; j < listaMetodos.size(); j++){
-                for(int a = 0; a < listaMetodos.get(j).size(); a++) {
-                    System.out.println(listaMetodos.get(j).get(a));
-                }
-            }
-            */
-            escrituraFichero.close();
-        } catch(IOException exception){};
-    };
+prog : idspc CLASS ID '{' clase '}';
 
 idspc : ID idspc
         | ';' idspc
         | ;
 
-clase : tipo=ID metodo=ID ids resto
+clase : ids tipo=ID metodo=ID
+        {
+            System.out.println("oooooooo");
+            System.out.println("Identificador de metodo: "+$metodo.text);
+            identificador_metodo=$metodo.text;
+        }
+        resto
         | ;
 
-resto : '(' params ')' def
-        | def
+resto : '('
+        {
+              System.out.println("Entro");
+              System.out.println("Metodo padre: "+metodo_padre);
+              System.out.println("Metodo Dentro: "+ identificador_metodo);
+        }
+         params ')' def
         | ';' clase ;
 
-def : '{' codigo '}' clase
+def : '{'
+        {
+                metodo_padre=identificador_metodo;
+                System.out.println("*************DEF");
+                System.out.println("Metodo DEF: "+metodo_padre);
+                //Add metodo listaMetodos
+        }
+        codigo '}'
+        {
+            metodo_padre=null;
+        }
+        clase
        | ';' clase ;
 
 ids : ID ids
@@ -65,20 +62,15 @@ codigo : identificador=ID
           }
          codigo
          | ';' codigo
-         | '('
-         {
-              System.out.println("Metodo padre: "+metodo_padre);
-              System.out.println("Metodo Dentro: "+ identificador_metodo);
-          }
-          codigo ')' codigo
-         |'{'
+         |
             {
-                metodo_padre=identificador_metodo;
-                System.out.println("*************DEBUG");
-                System.out.println("Metodo: "+metodo_padre);
-                //Add metodo listaMetodos
+                    System.out.println("*************DEBUG");
+                    System.out.println("Metodo padre: "+metodo_padre);
+                    System.out.println("Metodo hijo: "+ identificador_metodo);
+                    //Add metodo listaMetodos
             }
-         codigo '}' codigo
+         '('codigo ')' codigo
+         |'{'codigo '}' codigo
          | ;
 
 params : ID params
@@ -89,3 +81,4 @@ ID : LETTER(LETTER | DIGIT)*;  //Identificadores de variables
 LETTER : [a-zA-Z];
 DIGIT : [0-9]+;
 WS : [ \t\n]+ -> skip;
+SYSTEM : 'System'.*? ';' -> skip;
