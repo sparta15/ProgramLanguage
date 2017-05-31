@@ -1,7 +1,6 @@
 grammar CodigoJava;
 
 @header {
-    package tools;
     import java.util.*;
 }
 
