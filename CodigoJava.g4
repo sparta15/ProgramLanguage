@@ -120,11 +120,11 @@ WS :
       [ \t\n]+ -> skip
 ;
 
-OLC :
+MULTIPLE_LINE_COMMENT :
       '/*' .*? '*/' -> skip
 ;
 
-LINE_COMMENT :
+ONE_LINE_COMMENT :
       '//' ~[\r\n]* -> skip
 ;
 
