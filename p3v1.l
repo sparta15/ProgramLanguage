@@ -1,92 +1,113 @@
-{%
-//Lenguajes de Programación
-#define NUMERO_RESERVADAS 60
-#define NUMERO_IDENTIFICADORES 100
-#define NUMERO_MAX_CARACTERES 35
-#define NUMEROS 200
-#define ERROR_LECTURA -1
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
+%{
+	/**
+	* Universidad de Valladolid
+	* E.T.S Ingeniería Informática
+	* Grado en Ingeniería Informática
+	* Mención de Ingeniería de Software
+	*
+	* Curso 2016/2017
+	* Lenguajes de Programacion
+	* Practica 3 Fase a
+	*
+	* Diego Cristóbal, Ester
+	* Gutiérrez Casado, Carlos
+	* Lara Mongil, Víctor
+	* Pastor Díez, Guillermo
+	*/
 
-typedef struct {
-    char key [NUMERO_MAX_CARACTERES];
-    int value;
-}HashMap;
+	#include <stdio.h>
 
-HashMap TableReservadas[NUMERO_RESERVADAS];
-HashMap TableIdentificadores[NUMERO_IDENTIFICADORES];
-HashMap TableDigitos[NUMEROS];
+	#define NUMERO_MAX_CARACTERES 200
+	#define ERROR_LECTURA -1
+	#define TAM_BUFFER 4
 
-int contadorReservadas = 0;
-int contadorId = 0;
-int contadorNumeros = 0;
+	typedef struct {
+		char key [NUMERO_MAX_CARACTERES];
+		int value;
+	} HashMap;
 
+	HashMap *tableReservadas;
+	HashMap *tableIdentificadores;
+	HashMap *tableDigitos;
+
+	HashMap *aux;
+
+	int contadorReservadas = 0;
+	int contadorId = 0;
+	int contadorNumeros = 0;
+
+	void sumaId();
+	void sumarNumero();
 %}
+
+letra     [a-zA-Z]
+palabra   {letra}+
+alf       [a-zA-Z0-9]
+dig       [0-9]
+numeros   {dig}+
+fraccion  [.]{numeros}
+exponente [eE][+-]?{numeros}
+decimal   {numeros}{fraccion}?{exponente}?
+id        {letra}({alf}|"_")*
+
 %%
-"/*(.|\n)*/";
-"//".*"\n"  ;
-[\t]+       ;
-{letra}     [a-zA-Z];
-{palabra}   {letra}+;
-{alf}       [a-zA-Z0-9];
-{dig}       [0-9];
-{numeros}   {dig}+;
-{fraccion}  [.]{numeros};
-{exponente} [eE][+-]?{numeros};
-{decimal}   {numeros}{fraccion}?{exponente}?;
-{id}        {letra}({alf}|"_")*;
-abstract        {TableReservadas[0].value ++;}
-assert          {TableReservadas[1].value ++;}
-boolean         {TableReservadas[2].value ++;}
-break           {TableReservadas[3].value ++;}
-byte            {TableReservadas[4].value ++;}
-case            {TableReservadas[5].value ++;}
-catch           {TableReservadas[6].value ++;}
-char            {TableReservadas[7].value ++;}
-class           {TableReservadas[8].value ++;}
-const           {TableReservadas[9].value ++;}
-continue        {TableReservadas[10].value ++;}
-default         {TableReservadas[11].value ++;}
-do              {TableReservadas[12].value ++;}
-double          {TableReservadas[13].value ++;}
-else            {TableReservadas[14].value ++;}
-enum            {TableReservadas[15].value ++;}
-extends         {TableReservadas[16].value ++;}
-final           {TableReservadas[17].value ++;}
-finally         {TableReservadas[18].value ++;}
-float           {TableReservadas[19].value ++;}
-for             {TableReservadas[20].value ++;}
-goto            {TableReservadas[21].value ++;}
-if              {TableReservadas[22].value ++;}
-implemts        {TableReservadas[23].value ++;}
-import          {TableReservadas[24].value ++;}
-instaceof       {TableReservadas[25].value ++;}
-int             {TableReservadas[26].value ++;}
-interface       {TableReservadas[27].value ++;}
-long            {TableReservadas[28].value ++;}
-native          {TableReservadas[29].value ++;}
-new             {TableReservadas[30].value ++;}
-package         {TableReservadas[31].value ++;}
-private         {TableReservadas[32].value ++;}
-protected       {TableReservadas[33].value ++;}
-public          {TableReservadas[34].value ++;}
-return          {TableReservadas[35].value ++;}
-short           {TableReservadas[36].value ++;}
-static          {TableReservadas[37].value ++;}
-stricfp         {TableReservadas[38].value ++;}
-super           {TableReservadas[39].value ++;}
-switch          {TableReservadas[40].value ++;}
-synchronized    {TableReservadas[41].value ++;}
-this            {TableReservadas[42].value ++;}
-throw           {TableReservadas[43].value ++;}
-throws          {TableReservadas[44].value ++;}
-transient       {TableReservadas[45].value ++;}
-try             {TableReservadas[46].value ++;}
-void            {TableReservadas[47].value ++;}
-volatile        {TableReservadas[48].value ++;}
-while           {TableReservadas[49].value ++;}
+\/\*(.|\n)*\/\* ;
+\/\/.*\n     		;
+[\t]+           ;
+\".*\"					;
+abstract        tableReservadas[0].value ++;
+assert          tableReservadas[1].value ++;
+boolean         tableReservadas[2].value ++;
+break           tableReservadas[3].value ++;
+byte            tableReservadas[4].value ++;
+case            tableReservadas[5].value ++;
+catch           tableReservadas[6].value ++;
+char            tableReservadas[7].value ++;
+class           tableReservadas[8].value ++;
+const           tableReservadas[9].value ++;
+continue        tableReservadas[10].value ++;
+default         tableReservadas[11].value ++;
+do              tableReservadas[12].value ++;
+double          tableReservadas[13].value ++;
+else            tableReservadas[14].value ++;
+enum            tableReservadas[15].value ++;
+extends         tableReservadas[16].value ++;
+final           tableReservadas[17].value ++;
+finally         tableReservadas[18].value ++;
+float           tableReservadas[19].value ++;
+for             tableReservadas[20].value ++;
+goto            tableReservadas[21].value ++;
+if              tableReservadas[22].value ++;
+implemts        tableReservadas[23].value ++;
+import          tableReservadas[24].value ++;
+instaceof       tableReservadas[25].value ++;
+int             tableReservadas[26].value ++;
+interface       tableReservadas[27].value ++;
+long            tableReservadas[28].value ++;
+native          tableReservadas[29].value ++;
+new             tableReservadas[30].value ++;
+package         tableReservadas[31].value ++;
+private         tableReservadas[32].value ++;
+protected       tableReservadas[33].value ++;
+public          tableReservadas[34].value ++;
+return          tableReservadas[35].value ++;
+short           tableReservadas[36].value ++;
+static          tableReservadas[37].value ++;
+stricfp         tableReservadas[38].value ++;
+super           tableReservadas[39].value ++;
+switch          tableReservadas[40].value ++;
+synchronized    tableReservadas[41].value ++;
+this            tableReservadas[42].value ++;
+throw           tableReservadas[43].value ++;
+throws          tableReservadas[44].value ++;
+transient       tableReservadas[45].value ++;
+try             tableReservadas[46].value ++;
+void            tableReservadas[47].value ++;
+volatile        tableReservadas[48].value ++;
+while           tableReservadas[49].value ++;
+{decimal}     	sumarNumero(yytext);
+{id}          	sumaId(yytext);
+\n                      /* ignore end of line */;
 "!="        |
 ">="        |
 "<="        |
@@ -118,138 +139,143 @@ while           {TableReservadas[49].value ++;}
 "{"         |
 "}"         |
 "("         |
-")"         ;
-decimal     { sumarNumero(); }
-id          { sumaId(); }
+")"         {}
 
 %%
 
-void inicializarTablaReservadas() {
-    strcpy(TableReservadas[0].key, "abstract");
-    strcpy(TableReservadas[1].key, "assert");
-    strcpy(TableReservadas[2].key, "boolean");
-    strcpy(TableReservadas[3].key, "break");
-    strcpy(TableReservadas[4].key, "byte");
-    strcpy(TableReservadas[5].key, "case");
-    strcpy(TableReservadas[6].key, "catch");
-    strcpy(TableReservadas[7].key, "char");
-    strcpy(TableReservadas[8].key, "class");
-    strcpy(TableReservadas[9].key, "const");
-    strcpy(TableReservadas[10].key, "continue");
-    strcpy(TableReservadas[11].key, "default");
-    strcpy(TableReservadas[12].key, "do");
-    strcpy(TableReservadas[13].key, "double");
-    strcpy(TableReservadas[14].key, "else");
-    strcpy(TableReservadas[15].key, "enum");
-    strcpy(TableReservadas[16].key, "extends");
-    strcpy(TableReservadas[17].key, "final");
-    strcpy(TableReservadas[18].key, "finally");
-    strcpy(TableReservadas[19].key, "float");
-    strcpy(TableReservadas[20].key, "for");
-    strcpy(TableReservadas[21].key, "goto");
-    strcpy(TableReservadas[22].key, "if");
-    strcpy(TableReservadas[23].key, "implemts");
-    strcpy(TableReservadas[24].key, "import");
-    strcpy(TableReservadas[25].key, "instaceof");
-    strcpy(TableReservadas[26].key, "int");
-    strcpy(TableReservadas[27].key, "interface");
-    strcpy(TableReservadas[28].key, "long");
-    strcpy(TableReservadas[29].key, "native");
-    strcpy(TableReservadas[30].key, "new");
-    strcpy(TableReservadas[31].key, "package");
-    strcpy(TableReservadas[32].key, "private");
-    strcpy(TableReservadas[33].key, "protected");
-    strcpy(TableReservadas[34].key, "public");
-    strcpy(TableReservadas[35].key, "return");
-    strcpy(TableReservadas[36].key, "short");
-    strcpy(TableReservadas[37].key, "static");
-    strcpy(TableReservadas[38].key, "stricfp");
-    strcpy(TableReservadas[39].key, "super");
-    strcpy(TableReservadas[40].key, "switch");
-    strcpy(TableReservadas[41].key, "synchronized");
-    strcpy(TableReservadas[42].key, "this");
-    strcpy(TableReservadas[43].key, "throw");
-    strcpy(TableReservadas[44].key, "throws");
-    strcpy(TableReservadas[45].key, "transient");
-    strcpy(TableReservadas[46].key, "try");
-    strcpy(TableReservadas[47].key, "void");
-    strcpy(TableReservadas[48].key, "volatile");
-    strcpy(TableReservadas[49].key, "while");
+void inicializarTablas() {
+	tableReservadas = (HashMap *) malloc ( (((contadorReservadas / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+	tableIdentificadores = (HashMap *) malloc ( (((contadorId / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+	tableDigitos = (HashMap *) malloc ( (((contadorNumeros / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+
+    strcpy(tableReservadas[0].key, "abstract");
+    strcpy(tableReservadas[1].key, "assert");
+    strcpy(tableReservadas[2].key, "boolean");
+    strcpy(tableReservadas[3].key, "break");
+    strcpy(tableReservadas[4].key, "byte");
+    strcpy(tableReservadas[5].key, "case");
+    strcpy(tableReservadas[6].key, "catch");
+    strcpy(tableReservadas[7].key, "char");
+    strcpy(tableReservadas[8].key, "class");
+    strcpy(tableReservadas[9].key, "const");
+    strcpy(tableReservadas[10].key, "continue");
+    strcpy(tableReservadas[11].key, "default");
+    strcpy(tableReservadas[12].key, "do");
+    strcpy(tableReservadas[13].key, "double");
+    strcpy(tableReservadas[14].key, "else");
+    strcpy(tableReservadas[15].key, "enum");
+    strcpy(tableReservadas[16].key, "extends");
+    strcpy(tableReservadas[17].key, "final");
+    strcpy(tableReservadas[18].key, "finally");
+    strcpy(tableReservadas[19].key, "float");
+    strcpy(tableReservadas[20].key, "for");
+    strcpy(tableReservadas[21].key, "goto");
+    strcpy(tableReservadas[22].key, "if");
+    strcpy(tableReservadas[23].key, "implemts");
+    strcpy(tableReservadas[24].key, "import");
+    strcpy(tableReservadas[25].key, "instaceof");
+    strcpy(tableReservadas[26].key, "int");
+    strcpy(tableReservadas[27].key, "interface");
+    strcpy(tableReservadas[28].key, "long");
+    strcpy(tableReservadas[29].key, "native");
+    strcpy(tableReservadas[30].key, "new");
+    strcpy(tableReservadas[31].key, "package");
+    strcpy(tableReservadas[32].key, "private");
+    strcpy(tableReservadas[33].key, "protected");
+    strcpy(tableReservadas[34].key, "public");
+    strcpy(tableReservadas[35].key, "return");
+    strcpy(tableReservadas[36].key, "short");
+    strcpy(tableReservadas[37].key, "static");
+    strcpy(tableReservadas[38].key, "stricfp");
+    strcpy(tableReservadas[39].key, "super");
+    strcpy(tableReservadas[40].key, "switch");
+    strcpy(tableReservadas[41].key, "synchronized");
+    strcpy(tableReservadas[42].key, "this");
+    strcpy(tableReservadas[43].key, "throw");
+    strcpy(tableReservadas[44].key, "throws");
+    strcpy(tableReservadas[45].key, "transient");
+    strcpy(tableReservadas[46].key, "try");
+    strcpy(tableReservadas[47].key, "void");
+    strcpy(tableReservadas[48].key, "volatile");
+    strcpy(tableReservadas[49].key, "while");
 }
 
 void sumaId(char yylex[]) {
-    int i = 0;
-    int presente = 0;
-    for(i;i<NUMERO_IDENTIFICADORES;i++){
-        if(strcmp(yylex, TableIdentificadores[i].key)==0){
-            TableIdentificadores[i].value++;
+		int i;
+		int presente = 0;
+
+		if ( (contadorId % TAM_BUFFER) < 2) {
+				tableIdentificadores = (HashMap *) realloc (tableIdentificadores, (((contadorId / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+		}
+
+    for(i = 0; i < contadorId; i++) {
+        if( strcmp(yylex, tableIdentificadores[i].key) == 0 ) {
+            tableIdentificadores[i].value++;
             presente=1;
         }
     }
-    if(presente == 0) {
-        strcpy(TableIdentificadores[contadorId].key, yylex);
-        TableIdentificadores[contadorId].value++;
+
+    if( presente == 0 ) {
+        strcpy(tableIdentificadores[contadorId].key, yylex);
+        tableIdentificadores[contadorId].value++;
         contadorId++;
     }
 }
 
 void sumarNumero(char yylex[]) {
-    int i = 0;
-    int presente = 0;
-    for(i;i<NUMEROS;i++){
-        if(strcmp(yylex, TableNumeros[i].key)==0){
-            TableIdentificadores[i].value++;
+		int a;
+		int presente = 0;
+
+		if ( (contadorNumeros % TAM_BUFFER) < 2) {
+				tableDigitos = (HashMap *) realloc (tableDigitos, (((contadorNumeros / TAM_BUFFER) + 1) * TAM_BUFFER) * sizeof(HashMap));
+		}
+
+    for(a = 0; a < contadorNumeros; a++){
+        if(strcmp(yylex, tableDigitos[a].key)==0){
+            tableDigitos[a].value++;
             presente=1;
         }
     }
-    if(presente==0){
-        strcpy(TableNumeros[contadorNumeros].key, yylex);
-        TableNumeros[contadorNumeros].value++;
+
+    if ( presente == 0 ) {
+        strcpy(tableDigitos[contadorNumeros].key, yylex);
+        tableDigitos[contadorNumeros].value++;
         contadorNumeros++;
     }
 }
 
 
 void escribeReservadas(){
-    FILE *ficheroReservadas = ficheroReservadas.open("reserv.txt", "w");
-     if (ficheroReservadas  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
-    int i;
-    for(i=0;i<NUMERO_RESERVADAS;i++){
-        if(TableReservadas[i].value != 0){
-            fprintf(fichero, "%s : %d", TableReservadas[i].key, TableReservadas[i].value);
+		int i;
+    FILE *ficheroReservadas = fopen("reserv.txt", "w");
+
+    for(i = 0; i < contadorReservadas; i++){
+        if(tableReservadas[i].value != 0){
+            fprintf(ficheroReservadas, "%s : %d\n", tableReservadas[i].key, tableReservadas[i].value);
         }
     }
-    fclose(fichero);
+    fclose(ficheroReservadas);
 }
 
 void escribeIds () {
-    FILE *ficheroIds = ficheroIds.open("identi.txt", "w");
-     if (ficheroIds  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
-    int i;
-    for(i=0;i<NUMERO_IDENTIFICADORES;i++){
-        if(TableIdentificadores[i].value != 0){
-            fprintf(fichero, "%s : %d", TableIdentificadores[i].key, TableIdentificadores[i].value);
+		int i;
+    FILE *ficheroIds = fopen("identi.txt", "w");
+
+    for(i = 0; i < contadorId; i++){
+        if(tableIdentificadores[i].value != 0){
+            fprintf(ficheroIds, "%s : %d\n", tableIdentificadores[i].key, tableIdentificadores[i].value);
         }
     }
     fclose(ficheroIds);
 }
 
 void escribeNumeros () {
-    FILE *ficheroNumeros = ficheroNumeros.open("numero.txt", "w");
-    if (ficheroNumeros  == NULL) {
-        fprintf(stderr,"Error de fichero.\n");
-        exit(ERROR_LECTURA);
-    }
-    int i;
-    for(i=0;i<NUMEROS;i++){
-        if(TableDigitos[i].value != 0){
-            fprintf(fichero, "%s : %d", TableNumeros[i].key, TableNumeros[i].value);
+		int i;
+    FILE *ficheroNumeros = fopen("numero.txt", "w");
+
+    for(i = 0; i < contadorNumeros; i++){
+        if(tableDigitos[i].value != 0){
+            fprintf(ficheroNumeros, "%s : %d\n", tableDigitos[i].key, tableDigitos[i].value);
         }
     }
     fclose(ficheroNumeros);
@@ -260,7 +286,7 @@ int main( int argc, char** argv) {
     }else{
         yyin = stdin;
     }
-    inicializarTablaReservadas();
+    inicializarTablas();
     yylex();
     escribeReservadas();
     escribeIds();
