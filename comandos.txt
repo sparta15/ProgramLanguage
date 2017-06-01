@@ -1,0 +1,4 @@
+export CLASSPATH=".:/usr/local/lib/antlr-4.5.3-complete.jar:$CLASSPATH"
+antlr4 CodigoJava.g4 
+javac CodigoJava*.java
+grun CodigoJava prog < Clase.java
